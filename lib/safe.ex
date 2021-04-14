@@ -17,36 +17,36 @@ defprotocol LatexTemplate.Template.Safe do
   def to_iodata(data)
 end
 
-defimpl Iona.Template.Safe, for: Atom do
+defimpl LatexTemplate.Template.Safe, for: Atom do
   def to_iodata(nil), do: ""
   def to_iodata(atom), do: Iona.Template.Helper.escape_to_iodata(Atom.to_string(atom))
 end
 
-defimpl Iona.Template.Safe, for: BitString do
+defimpl LatexTemplate.Template.Safe, for: BitString do
   defdelegate to_iodata(data), to: Iona.Template.Helper, as: :escape
 end
 
-defimpl Iona.Template.Safe, for: Time do
+defimpl LatexTemplate.Template.Safe, for: Time do
   defdelegate to_iodata(data), to: Time, as: :to_string
 end
 
-defimpl Iona.Template.Safe, for: Date do
+defimpl LatexTemplate.Template.Safe, for: Date do
   defdelegate to_iodata(data), to: Date, as: :to_string
 end
 
-defimpl Iona.Template.Safe, for: NaiveDateTime do
+defimpl LatexTemplate.Template.Safe, for: NaiveDateTime do
   defdelegate to_iodata(data), to: NaiveDateTime, as: :to_string
 end
 
-defimpl Iona.Template.Safe, for: DateTime do
+defimpl LatexTemplate.Template.Safe, for: DateTime do
   def to_iodata(data) do
     # Call escape in case someone can inject reserved
     # characters in the timezone or its abbreviation
-    Iona.Template.Helper.escape_to_iodata(DateTime.to_string(data))
+    LatexTemplate.Template.Helper.escape_to_iodata(DateTime.to_string(data))
   end
 end
 
-defimpl Iona.Template.Safe, for: List do
+defimpl LatexTemplate.Template.Safe, for: List do
   def to_iodata([h | t]) do
     [to_iodata(h) | to_iodata(t)]
   end
@@ -56,7 +56,7 @@ defimpl Iona.Template.Safe, for: List do
   end
 
   def to_iodata(h) when is_integer(h) and h <= 255 do
-    Iona.Template.Helper.escape(to_string([h]))
+    LatexTemplate.Template.Helper.escape(to_string([h]))
   end
 
   def to_iodata(h) when is_integer(h) do
@@ -66,7 +66,7 @@ defimpl Iona.Template.Safe, for: List do
   end
 
   def to_iodata(h) when is_binary(h) do
-    Iona.Template.Helper.escape_to_iodata(h)
+    LatexTemplate.Template.Helper.escape_to_iodata(h)
   end
 
   def to_iodata({:safe, data}) do
@@ -80,17 +80,17 @@ defimpl Iona.Template.Safe, for: List do
   end
 end
 
-defimpl Iona.Template.Safe, for: Integer do
+defimpl LatexTemplate.Template.Safe, for: Integer do
   def to_iodata(data), do: Integer.to_string(data)
 end
 
-defimpl Iona.Template.Safe, for: Float do
+defimpl LatexTemplate.Template.Safe, for: Float do
   def to_iodata(data) do
     IO.iodata_to_binary(:io_lib_format.fwrite_g(data))
   end
 end
 
-defimpl Iona.Template.Safe, for: Tuple do
+defimpl LatexTemplate.Template.Safe, for: Tuple do
   def to_iodata({:safe, data}), do: data
   def to_iodata(value), do: raise(Protocol.UndefinedError, protocol: @protocol, value: value)
 end
